@@ -23,8 +23,8 @@
         <p class="eyebrow">Academic Learning Platform</p>
         <h1>Welcome to EduStream LMS</h1>
         <p>
-          This project currently supports the foundation and registration pages for
-          instructors and students.
+          This project currently supports the foundation, registration, and login
+          session flow for instructors and students.
         </p>
 
         <div class="actions">
@@ -32,6 +32,14 @@
           <a class="button secondary" href="login.html">Login</a>
         </div>
       </section>
+
+      <section class="status-card" id="dashboardStatus">
+        <h2>Current Session</h2>
+        <p id="sessionStatusText">Not logged in.</p>
+      </section>
     </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
   </body>
 </html>

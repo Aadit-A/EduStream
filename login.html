@@ -22,12 +22,31 @@
       <section class="form-card">
         <p class="eyebrow">Access your account</p>
         <h1>Login</h1>
-        <p class="placeholder-text">
-          Login is not implemented in this milestone. This page is reserved for the
-          next development step.
-        </p>
-        <a href="register.html" class="button primary">Register Instead</a>
+
+        <form id="loginForm" novalidate>
+          <div class="field-group">
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" name="email" type="email" placeholder="you@example.com" />
+            <p class="field-error" id="loginEmailError"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" name="password" type="password" placeholder="Password" />
+            <p class="field-error" id="loginPasswordError"></p>
+          </div>
+
+          <button type="submit" class="button primary wide-button">Login</button>
+        </form>
+
+        <div id="loginSuccess" class="success-message hidden" aria-live="polite">
+          <p>Login successful.</p>
+          <p id="loginUserDetails"></p>
+        </div>
       </section>
     </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
   </body>
 </html>

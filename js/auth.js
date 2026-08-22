@@ -1,4 +1,5 @@
 const USERS_STORAGE_KEY = "edustream_users";
+const CURRENT_USER_STORAGE_KEY = "currentUser";
 
 function getUsers() {
   const rawUsers = localStorage.getItem(USERS_STORAGE_KEY);
@@ -52,4 +53,53 @@ function registerUser(userData) {
     success: true,
     user: newUser,
   };
+}
+
+function loginUser(email, password) {
+  const users = getUsers();
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const foundUser = users.find(function (user) {
+    return user.email === normalizedEmail && user.password === password;
+  });
+
+  if (!foundUser) {
+    return {
+      success: false,
+      message: "Invalid email or password.",
+    };
+  }
+
+  const currentUser = {
+    id: foundUser.id,
+    name: foundUser.name,
+    email: foundUser.email,
+    role: foundUser.role,
+  };
+
+  sessionStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(currentUser));
+
+  return {
+    success: true,
+    user: currentUser,
+  };
+}
+
+function getCurrentUser() {
+  const rawCurrentUser = sessionStorage.getItem(CURRENT_USER_STORAGE_KEY);
+
+  if (!rawCurrentUser) {
+    return null;
+  }
+
+  try {
+    const currentUser = JSON.parse(rawCurrentUser);
+    return currentUser && typeof currentUser === "object" ? currentUser : null;
+  } catch (error) {
+    console.error("Unable to parse current user from sessionStorage.", error);
+    return null;
+  }
+}
+
+function isLoggedIn() {
+  return Boolean(getCurrentUser());
 }
