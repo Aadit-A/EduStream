@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | EduStream LMS</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="top-nav">
+        <div class="brand">EduStream LMS</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="register.html">Register</a>
+          <a href="login.html">Login</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="form-card">
+        <p class="eyebrow">Create an account</p>
+        <h1>Register</h1>
+
+        <form id="registerForm" novalidate>
+          <div class="field-group">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Full name" />
+            <p class="field-error" id="nameError"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" />
+            <p class="field-error" id="emailError"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Password" />
+            <p class="field-error" id="passwordError"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="role">Role</label>
+            <select id="role" name="role">
+              <option value="">Select a role</option>
+              <option value="instructor">Instructor</option>
+              <option value="student">Student</option>
+            </select>
+            <p class="field-error" id="roleError"></p>
+          </div>
+
+          <button type="submit" class="button primary wide-button">Register</button>
+        </form>
+
+        <div id="successMessage" class="success-message hidden" aria-live="polite">
+          <p>Registration successful.</p>
+          <a href="login.html" class="button secondary">Go to Login</a>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/register.js"></script>
+  </body>
+</html>
