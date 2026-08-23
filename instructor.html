@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instructor Dashboard | EduStream LMS</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/instructor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="top-nav">
+        <div class="brand">EduStream LMS</div>
+        <div class="nav-links">
+          <span id="welcomeMsg"></span>
+          <button class="button secondary" onclick="logoutUser()">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <p class="eyebrow">Instructor Panel</p>
+      <h1>Course Management</h1>
+
+      <div class="action-bar">
+        <button class="button" onclick="showSection('create')">Create Course</button>
+        <button class="button" onclick="showSection('edit')">Edit Course</button>
+        <button class="button" onclick="showSection('publish')">Publish Course</button>
+        <button class="button secondary" onclick="showSection('remove')">Remove Course</button>
+      </div>
+
+      <!-- Create -->
+      <section id="createSection" class="course-section hidden">
+        <h2>Create a New Course</h2>
+        <div class="field-group">
+          <label for="courseTitle">Course Title</label>
+          <input type="text" id="courseTitle" placeholder="e.g. JavaScript for Beginners" />
+        </div>
+        <div class="field-group">
+          <label for="courseCategory">Category</label>
+          <select id="courseCategory">
+            <option value="">-- Select --</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="English Language">English Language</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="Economics">Economics</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="courseDesc">Description</label>
+          <textarea id="courseDesc" placeholder="Brief description of the course..."></textarea>
+        </div>
+        <button class="button" onclick="createCourse()">Save Course</button>
+        <p id="createMsg" class="msg hidden"></p>
+      </section>
+
+      <!-- Edit -->
+      <section id="editSection" class="course-section hidden">
+        <h2>Edit a Course</h2>
+        <div class="field-group">
+          <label for="editSelect">Select Course</label>
+          <select id="editSelect" onchange="loadCourseForEdit()">
+            <option value="">-- Choose a course --</option>
+          </select>
+        </div>
+        <div id="editFields" class="hidden">
+          <div class="field-group">
+            <label for="editTitle">Title</label>
+            <input type="text" id="editTitle" />
+          </div>
+          <div class="field-group">
+            <label for="editCategory">Category</label>
+            <select id="editCategory">
+              <option value="Mathematics">Mathematics</option>
+              <option value="Science">Science</option>
+              <option value="English Language">English Language</option>
+              <option value="History">History</option>
+              <option value="Geography">Geography</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Biology">Biology</option>
+              <option value="Economics">Economics</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="editDesc">Description</label>
+            <textarea id="editDesc"></textarea>
+          </div>
+          <button class="button" onclick="saveCourseEdit()">Update Course</button>
+        </div>
+        <p id="editMsg" class="msg hidden"></p>
+      </section>
+
+      <!-- Publish -->
+      <section id="publishSection" class="course-section hidden">
+        <h2>Publish a Course</h2>
+        <p class="placeholder-text">Select a draft course below to publish it.</p>
+        <div id="publishList" class="course-list"></div>
+        <p id="publishMsg" class="msg hidden"></p>
+      </section>
+
+      <!-- Remove -->
+      <section id="removeSection" class="course-section hidden">
+        <h2>Remove a Published Course</h2>
+        <p class="placeholder-text">Published courses listed below. Click Remove to delete.</p>
+        <div id="removeList" class="course-list"></div>
+        <p id="removeMsg" class="msg hidden"></p>
+      </section>
+
+      <!-- My Courses Table -->
+      <section class="course-section table-section">
+        <h2>My Courses</h2>
+        <table id="courseTable">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="courseTableBody">
+            <tr><td colspan="3" class="placeholder-text">No courses yet.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/instructor.js"></script>
+  </body>
+</html>
