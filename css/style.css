@@ -69,7 +69,8 @@ select {
 }
 
 .intro-card,
-.form-card {
+.form-card,
+.status-card {
   max-width: 560px;
   margin: 0 auto;
   padding: 2rem;
@@ -183,6 +184,15 @@ select:focus {
 
 .placeholder-text {
   color: var(--text-soft);
+}
+
+.status-card {
+  margin-top: 1.5rem;
+}
+
+.status-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
 }
 
 @media (max-width: 600px) {

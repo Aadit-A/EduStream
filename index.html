@@ -18,24 +18,13 @@
       </nav>
     </header>
 
-    <main class="page-shell">
+    <main class="page-shell" id="protectedDashboard">
       <section class="intro-card">
-        <p class="eyebrow">Academic Learning Platform</p>
-        <h1>Welcome to EduStream LMS</h1>
-        <p>
-          This project currently supports the foundation, registration, and login
-          session flow for instructors and students.
-        </p>
-
-        <div class="actions">
-          <a class="button primary" href="register.html">Create Account</a>
-          <a class="button secondary" href="login.html">Login</a>
-        </div>
-      </section>
-
-      <section class="status-card" id="dashboardStatus">
-        <h2>Current Session</h2>
-        <p id="sessionStatusText">Not logged in.</p>
+        <p class="eyebrow">Authenticated area</p>
+        <h1 id="welcomeMessage">Welcome</h1>
+        <p id="roleMessage">Role:</p>
+        <p id="sessionStatusText">Logged in: Yes</p>
+        <button type="button" class="button primary" id="logoutButton">Logout</button>
       </section>
     </main>
 

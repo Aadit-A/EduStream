@@ -103,3 +103,32 @@ function getCurrentUser() {
 function isLoggedIn() {
   return Boolean(getCurrentUser());
 }
+
+function logoutUser() {
+  sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+  window.location.href = "login.html";
+}
+
+function requireLogin() {
+  if (!isLoggedIn()) {
+    window.location.href = "login.html";
+    return false;
+  }
+
+  return true;
+}
+
+function requireRole(requiredRole) {
+  const currentUser = getCurrentUser();
+
+  if (!currentUser) {
+    window.location.href = "login.html";
+    return false;
+  }
+
+  if (currentUser.role !== requiredRole) {
+    return false;
+  }
+
+  return true;
+}

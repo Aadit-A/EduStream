@@ -1,12 +1,16 @@
-const sessionStatusText = document.getElementById("sessionStatusText");
+const dashboard = document.getElementById("protectedDashboard");
+const logoutButton = document.getElementById("logoutButton");
+const welcomeMessage = document.getElementById("welcomeMessage");
+const roleMessage = document.getElementById("roleMessage");
 
-if (sessionStatusText) {
+if (dashboard && requireLogin()) {
   const currentUser = getCurrentUser();
+  welcomeMessage.textContent = "Welcome, " + currentUser.name;
+  roleMessage.textContent = "Role: " + currentUser.role;
+}
 
-  if (currentUser) {
-    sessionStatusText.textContent =
-      "User: " + currentUser.name + " | Role: " + currentUser.role + " | Logged in: Yes";
-  } else {
-    sessionStatusText.textContent = "User: Guest | Role: N/A | Logged in: No";
-  }
+if (logoutButton) {
+  logoutButton.addEventListener("click", () => {
+    logoutUser();
+  });
 }
