@@ -78,6 +78,13 @@ if (loginForm) {
     }
 
     loginForm.reset();
+
+    // Redirect based on role
+    if (result.user.role === "instructor") {
+      window.location.href = "instructor.html";
+      return;
+    }
+
     loginSuccess.classList.remove("hidden");
     loginUserDetails.textContent =
       "Welcome, " + result.user.name + " (" + result.user.role + ")";
