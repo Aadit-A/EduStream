@@ -85,6 +85,11 @@ if (loginForm) {
       return;
     }
 
+    if (result.user.role === "student") {
+      window.location.href = "courses.html";
+      return;
+    }
+
     loginSuccess.classList.remove("hidden");
     loginUserDetails.textContent =
       "Welcome, " + result.user.name + " (" + result.user.role + ")";
