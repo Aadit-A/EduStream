@@ -1,5 +1,3 @@
-const COURSES_STORAGE_KEY = "edustream_courses";
-
 const courseTitle = document.getElementById("courseTitle");
 const courseCategory = document.getElementById("courseCategory");
 const courseDescription = document.getElementById("courseDescription");
@@ -10,51 +8,26 @@ function getSelectedCourseId() {
   const params = new URLSearchParams(window.location.search);
   const rawId = params.get("id");
 
-  if (!rawId) {
-    return "";
-  }
-
+  if (!rawId) return "";
   return decodeURIComponent(rawId);
 }
 
-function getCourseList() {
-  const rawCourses = localStorage.getItem(COURSES_STORAGE_KEY);
-
-  if (!rawCourses) {
-    return [];
-  }
-
-  try {
-    const parsedCourses = JSON.parse(rawCourses);
-    return Array.isArray(parsedCourses) ? parsedCourses : [];
-  } catch (error) {
-    console.error("Unable to parse courses from localStorage.", error);
-    return [];
-  }
+async function getCourseList() {
+  return await apiGet("/courses");
 }
 
 function showError(message) {
-  if (!courseError) {
-    return;
-  }
+  if (!courseError) return;
 
   courseError.textContent = message;
   courseError.classList.remove("hidden");
 
-  if (courseTitle) {
-    courseTitle.textContent = "Course not found";
-  }
-
-  if (courseCategory) {
-    courseCategory.textContent = "-";
-  }
-
-  if (courseDescription) {
-    courseDescription.textContent = "The requested course could not be loaded.";
-  }
+  if (courseTitle) courseTitle.textContent = "Course not found";
+  if (courseCategory) courseCategory.textContent = "-";
+  if (courseDescription) courseDescription.textContent = "The requested course could not be loaded.";
 }
 
-function renderCourseDetails() {
+async function renderCourseDetails() {
   const selectedCourseId = getSelectedCourseId();
 
   if (!selectedCourseId) {
@@ -62,8 +35,9 @@ function renderCourseDetails() {
     return;
   }
 
-  const course = getCourseList().find(function (item) {
-    return item && item.id === selectedCourseId && item.status === "published";
+  const courses = await getCourseList();
+  const course = courses.find(function (item) {
+    return item && item.id == selectedCourseId && item.status === "published";
   });
 
   if (!course) {
@@ -71,17 +45,9 @@ function renderCourseDetails() {
     return;
   }
 
-  if (courseTitle) {
-    courseTitle.textContent = course.title || "Untitled Course";
-  }
-
-  if (courseCategory) {
-    courseCategory.textContent = course.category || "General";
-  }
-
-  if (courseDescription) {
-    courseDescription.textContent = course.description || "No description available.";
-  }
+  if (courseTitle) courseTitle.textContent = course.title || "Untitled Course";
+  if (courseCategory) courseCategory.textContent = course.category || "General";
+  if (courseDescription) courseDescription.textContent = course.description || "No description available.";
 
   if (courseError) {
     courseError.classList.add("hidden");
@@ -90,9 +56,7 @@ function renderCourseDetails() {
 }
 
 function bindBackNavigation() {
-  if (!backToCoursesButton) {
-    return;
-  }
+  if (!backToCoursesButton) return;
 
   backToCoursesButton.addEventListener("click", function (event) {
     event.preventDefault();

@@ -7,18 +7,15 @@ if (!currentUser || currentUser.role !== "instructor") {
   document.getElementById("welcomeMsg").textContent = "Welcome, " + currentUser.name;
 }
 
-// ── Load and save courses ──────────────────────────────────
+// ── Load courses ─────────────────────────────────────────
 async function getCourses() {
   return await apiGet("/courses");
 }
 
-function saveCourses(list) {
-  localStorage.setItem("edustream_courses", JSON.stringify(list));
-}
-
 // My courses only
-function myCourses() {
-  return getCourses().filter(function(c) {
+async function myCourses() {
+  const courses = await getCourses();
+  return courses.filter(function(c) {
     return c.instructorId === currentUser.id;
   });
 }
@@ -45,9 +42,9 @@ function showMsg(id, text) {
 }
 
 // ── Refresh the courses table ──────────────────────────────
-function refreshTable() {
+async function refreshTable() {
   var tbody = document.getElementById("courseTableBody");
-  var courses = myCourses();
+  var courses = await myCourses();
 
   if (courses.length === 0) {
     tbody.innerHTML = "<tr><td colspan='3'>No courses yet.</td></tr>";
@@ -62,7 +59,7 @@ function refreshTable() {
 }
 
 // ── CREATE ─────────────────────────────────────────────────
-function createCourse() {
+async function createCourse() {
   var title    = document.getElementById("courseTitle").value.trim();
   var category = document.getElementById("courseCategory").value;
   var desc     = document.getElementById("courseDesc").value.trim();
@@ -73,7 +70,6 @@ function createCourse() {
   }
 
   var course = {
-    id: "course-" + Date.now(),
     instructorId: currentUser.id,
     title: title,
     category: category,
@@ -81,42 +77,47 @@ function createCourse() {
     status: "draft"
   };
 
-  var courses = getCourses();
-  courses.push(course);
-  saveCourses(courses);
+  var result = await apiPost("/courses", course);
+
+  if (!result) {
+    showMsg("createMsg", "Something went wrong, try again.");
+    return;
+  }
 
   document.getElementById("courseTitle").value    = "";
   document.getElementById("courseCategory").value = "";
   document.getElementById("courseDesc").value     = "";
 
   showMsg("createMsg", "Course created as Draft!");
-  refreshTable();
+  await refreshTable();
 }
 
 // ── EDIT ───────────────────────────────────────────────────
-function fillEditDropdown() {
+async function fillEditDropdown() {
   var select = document.getElementById("editSelect");
   select.innerHTML = "<option value=''>-- Choose a course --</option>";
 
-  myCourses().forEach(function(c) {
+  var courses = await myCourses();
+  courses.forEach(function(c) {
     select.innerHTML += "<option value='" + c.id + "'>" + c.title + " (" + c.status + ")</option>";
   });
 
   document.getElementById("editFields").classList.add("hidden");
 }
 
-function loadCourseForEdit() {
+async function loadCourseForEdit() {
   var id = document.getElementById("editSelect").value;
   if (!id) { document.getElementById("editFields").classList.add("hidden"); return; }
 
-  var course = getCourses().find(function(c) { return c.id === id; });
+  var courses = await getCourses();
+  var course = courses.find(function(c) { return c.id == id; });
   document.getElementById("editTitle").value    = course.title;
   document.getElementById("editCategory").value = course.category;
   document.getElementById("editDesc").value     = course.description;
   document.getElementById("editFields").classList.remove("hidden");
 }
 
-function saveCourseEdit() {
+async function saveCourseEdit() {
   var id    = document.getElementById("editSelect").value;
   var title = document.getElementById("editTitle").value.trim();
   var cat   = document.getElementById("editCategory").value;
@@ -124,21 +125,27 @@ function saveCourseEdit() {
 
   if (!title || !cat) { showMsg("editMsg", "Title and category required."); return; }
 
-  var courses = getCourses();
-  courses.forEach(function(c) {
-    if (c.id === id) { c.title = title; c.category = cat; c.description = desc; }
+  var result = await apiPatch("/courses/" + id, {
+    title: title,
+    category: cat,
+    description: desc
   });
 
-  saveCourses(courses);
+  if (!result) {
+    showMsg("editMsg", "Something went wrong, try again.");
+    return;
+  }
+
   showMsg("editMsg", "Course updated!");
-  fillEditDropdown();
-  refreshTable();
+  await fillEditDropdown();
+  await refreshTable();
 }
 
 // ── PUBLISH ────────────────────────────────────────────────
-function fillPublishList() {
+async function fillPublishList() {
   var list   = document.getElementById("publishList");
-  var drafts = myCourses().filter(function(c) { return c.status === "draft"; });
+  var courses = await myCourses();
+  var drafts = courses.filter(function(c) { return c.status === "draft"; });
 
   if (drafts.length === 0) { list.innerHTML = "<p>No draft courses to publish.</p>"; return; }
 
@@ -152,19 +159,24 @@ function fillPublishList() {
   });
 }
 
-function publishCourse(id) {
-  var courses = getCourses();
-  courses.forEach(function(c) { if (c.id === id) c.status = "published"; });
-  saveCourses(courses);
+async function publishCourse(id) {
+  var result = await apiPatch("/courses/" + id, { status: "published" });
+
+  if (!result) {
+    showMsg("publishMsg", "Something went wrong, try again.");
+    return;
+  }
+
   showMsg("publishMsg", "Course published!");
-  fillPublishList();
-  refreshTable();
+  await fillPublishList();
+  await refreshTable();
 }
 
 // ── REMOVE ─────────────────────────────────────────────────
-function fillRemoveList() {
+async function fillRemoveList() {
   var list      = document.getElementById("removeList");
-  var published = myCourses().filter(function(c) { return c.status === "published"; });
+  var courses = await myCourses();
+  var published = courses.filter(function(c) { return c.status === "published"; });
 
   if (published.length === 0) { list.innerHTML = "<p>No published courses to remove.</p>"; return; }
 
@@ -178,14 +190,19 @@ function fillRemoveList() {
   });
 }
 
-function deleteCourse(id, title) {
+async function deleteCourse(id, title) {
   if (!confirm("Are you sure you want to delete \"" + title + "\"?")) return;
 
-  var courses = getCourses().filter(function(c) { return c.id !== id; });
-  saveCourses(courses);
+  var ok = await apiDelete("/courses/" + id);
+
+  if (!ok) {
+    showMsg("removeMsg", "Something went wrong, try again.");
+    return;
+  }
+
   showMsg("removeMsg", "\"" + title + "\" deleted.");
-  fillRemoveList();
-  refreshTable();
+  await fillRemoveList();
+  await refreshTable();
 }
 
 // ── On page load ───────────────────────────────────────────

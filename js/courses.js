@@ -1,29 +1,8 @@
-const COURSES_STORAGE_KEY = "edustream_courses";
-const courseGrid = document.getElementById("coursesContainer");
-const sortCoursesSelect = document.getElementById("sortCourses");
-const courseCount = document.getElementById("courseCount");
-
-function getPublishedCourses() {
-  const rawCourses = localStorage.getItem(COURSES_STORAGE_KEY);
-
-  if (!rawCourses) {
-    return [];
-  }
-
-  try {
-    const parsedCourses = JSON.parse(rawCourses);
-
-    if (!Array.isArray(parsedCourses)) {
-      return [];
-    }
-
-    return parsedCourses.filter(function (course) {
-      return course && course.status === "published";
-    });
-  } catch (error) {
-    console.error("Unable to parse courses from localStorage.", error);
-    return [];
-  }
+async function getPublishedCourses() {
+  const allCourses = await apiGet("/courses");
+  return allCourses.filter(function (course) {
+    return course && course.status === "published";
+  });
 }
 
 function sortCourses(courses, direction) {
@@ -33,14 +12,8 @@ function sortCourses(courses, direction) {
     const aTitle = (a.title || "").toLowerCase();
     const bTitle = (b.title || "").toLowerCase();
 
-    if (aTitle < bTitle) {
-      return direction === "az" ? -1 : 1;
-    }
-
-    if (aTitle > bTitle) {
-      return direction === "az" ? 1 : -1;
-    }
-
+    if (aTitle < bTitle) return direction === "az" ? -1 : 1;
+    if (aTitle > bTitle) return direction === "az" ? 1 : -1;
     return 0;
   });
 
@@ -65,20 +38,18 @@ function buildCourseCard(course) {
   `;
 }
 
-function renderCourses() {
-  if (!courseGrid) {
-    return;
-  }
+async function renderCourses() {
+  const courseGrid = document.getElementById("coursesContainer");
+  const sortCoursesSelect = document.getElementById("sortCourses");
+  const courseCount = document.getElementById("courseCount");
+
+  if (!courseGrid) return;
 
   const direction = sortCoursesSelect ? sortCoursesSelect.value : "az";
-  const publishedCourses = sortCourses(getPublishedCourses(), direction);
+  const publishedCourses = sortCourses(await getPublishedCourses(), direction);
 
   if (courseCount) {
-    const totalPublishedCourses = publishedCourses.reduce(function (count, course) {
-      return course && course.status === "published" ? count + 1 : count;
-    }, 0);
-
-    courseCount.textContent = "Published Courses: " + totalPublishedCourses;
+    courseCount.textContent = "Published Courses: " + publishedCourses.length;
   }
 
   if (publishedCourses.length === 0) {
@@ -104,7 +75,6 @@ function renderCourses() {
 
       detailsButton.addEventListener("keydown", function (event) {
         const link = event.target.closest(".course-link");
-
         if (link && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
           window.location.href = link.getAttribute("href");
@@ -115,9 +85,9 @@ function renderCourses() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  const sortCoursesSelect = document.getElementById("sortCourses");
   if (sortCoursesSelect) {
     sortCoursesSelect.addEventListener("change", renderCourses);
   }
-
   renderCourses();
 });
