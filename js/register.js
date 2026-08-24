@@ -19,9 +19,7 @@ function setError(fieldName, message) {
   const input = fieldMap[fieldName];
   const errorElement = errorMap[fieldName];
 
-  if (!input || !errorElement) {
-    return;
-  }
+  if (!input || !errorElement) return;
 
   if (message) {
     input.setAttribute("aria-invalid", "true");
@@ -82,7 +80,7 @@ function clearSuccessMessage() {
 }
 
 if (registerForm) {
-  registerForm.addEventListener("submit", function (event) {
+  registerForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     clearSuccessMessage();
@@ -96,11 +94,9 @@ if (registerForm) {
 
     const isValid = validateRegistrationForm(formData);
 
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
 
-    const result = registerUser(formData);
+    const result = await registerUser(formData);
 
     if (!result.success) {
       setError("email", result.message);

@@ -16,9 +16,7 @@ function setLoginError(fieldName, message) {
   const input = loginFieldMap[fieldName];
   const errorElement = loginErrorMap[fieldName];
 
-  if (!input || !errorElement) {
-    return;
-  }
+  if (!input || !errorElement) return;
 
   if (message) {
     input.setAttribute("aria-invalid", "true");
@@ -57,7 +55,7 @@ function validateLoginForm(email, password) {
 }
 
 if (loginForm) {
-  loginForm.addEventListener("submit", function (event) {
+  loginForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     clearLoginSuccess();
@@ -65,11 +63,9 @@ if (loginForm) {
     const email = loginFieldMap.email.value;
     const password = loginFieldMap.password.value;
 
-    if (!validateLoginForm(email, password)) {
-      return;
-    }
+    if (!validateLoginForm(email, password)) return;
 
-    const result = loginUser(email, password);
+    const result = await loginUser(email, password);
 
     if (!result.success) {
       setLoginError("email", result.message);
@@ -79,7 +75,6 @@ if (loginForm) {
 
     loginForm.reset();
 
-    // Redirect based on role
     if (result.user.role === "instructor") {
       window.location.href = "instructor.html";
       return;
