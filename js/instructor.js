@@ -8,8 +8,8 @@ if (!currentUser || currentUser.role !== "instructor") {
 }
 
 // ── Load and save courses ──────────────────────────────────
-function getCourses() {
-  return JSON.parse(localStorage.getItem("edustream_courses") || "[]");
+async function getCourses() {
+  return await apiGet("/courses");
 }
 
 function saveCourses(list) {
