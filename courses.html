@@ -27,6 +27,16 @@
         <p>Explore the latest learning resources available to students.</p>
       </section>
 
+      <div class="sort-row">
+        <label for="sortCourses">Sort by title:</label>
+        <select id="sortCourses">
+          <option value="az">A-Z</option>
+          <option value="za">Z-A</option>
+        </select>
+      </div>
+
+      <p id="courseCount" class="course-count">Published Courses: 0</p>
+
       <section id="coursesContainer" class="courses-grid" aria-live="polite"></section>
     </main>
 

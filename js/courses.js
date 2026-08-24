@@ -1,5 +1,7 @@
 const COURSES_STORAGE_KEY = "edustream_courses";
 const courseGrid = document.getElementById("coursesContainer");
+const sortCoursesSelect = document.getElementById("sortCourses");
+const courseCount = document.getElementById("courseCount");
 
 function getPublishedCourses() {
   const rawCourses = localStorage.getItem(COURSES_STORAGE_KEY);
@@ -22,6 +24,27 @@ function getPublishedCourses() {
     console.error("Unable to parse courses from localStorage.", error);
     return [];
   }
+}
+
+function sortCourses(courses, direction) {
+  const sortedCourses = courses.slice();
+
+  sortedCourses.sort(function (a, b) {
+    const aTitle = (a.title || "").toLowerCase();
+    const bTitle = (b.title || "").toLowerCase();
+
+    if (aTitle < bTitle) {
+      return direction === "az" ? -1 : 1;
+    }
+
+    if (aTitle > bTitle) {
+      return direction === "az" ? 1 : -1;
+    }
+
+    return 0;
+  });
+
+  return sortedCourses;
 }
 
 function buildCourseCard(course) {
@@ -47,7 +70,16 @@ function renderCourses() {
     return;
   }
 
-  const publishedCourses = getPublishedCourses();
+  const direction = sortCoursesSelect ? sortCoursesSelect.value : "az";
+  const publishedCourses = sortCourses(getPublishedCourses(), direction);
+
+  if (courseCount) {
+    const totalPublishedCourses = publishedCourses.reduce(function (count, course) {
+      return course && course.status === "published" ? count + 1 : count;
+    }, 0);
+
+    courseCount.textContent = "Published Courses: " + totalPublishedCourses;
+  }
 
   if (publishedCourses.length === 0) {
     courseGrid.innerHTML = `
@@ -69,8 +101,23 @@ function renderCourses() {
     const detailsButton = card.querySelector(".course-link");
     if (detailsButton) {
       detailsButton.setAttribute("aria-label", "View details for " + card.dataset.courseId);
+
+      detailsButton.addEventListener("keydown", function (event) {
+        const link = event.target.closest(".course-link");
+
+        if (link && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          window.location.href = link.getAttribute("href");
+        }
+      });
     }
   });
 }
 
-document.addEventListener("DOMContentLoaded", renderCourses);
+document.addEventListener("DOMContentLoaded", function () {
+  if (sortCoursesSelect) {
+    sortCoursesSelect.addEventListener("change", renderCourses);
+  }
+
+  renderCourses();
+});
