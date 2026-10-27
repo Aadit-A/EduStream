@@ -6,6 +6,13 @@
       "password": "12344",
       "role": "instructor",
       "id": "JUIgV7HbHHk"
+    },
+    {
+      "name": "website",
+      "email": "aryankanas2005@gmail.com",
+      "password": "1234",
+      "role": "instructor",
+      "id": "dvbjEQpD5K0"
     }
   ],
   "courses": [],
