@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Production builds
+dist/
+dist-ssr/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and reports
+*.log
+coverage/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.sw?
