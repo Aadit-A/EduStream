@@ -1,0 +1,29 @@
+{
+  "users": [
+    {
+      "name": "User",
+      "email": "you@email.com",
+      "password": "12344",
+      "role": "instructor",
+      "id": "JUIgV7HbHHk"
+    },
+    {
+      "name": "website",
+      "email": "aryankanas2005@gmail.com",
+      "password": "1234",
+      "role": "student",
+      "id": "dvbjEQpD5K0"
+    }
+  ],
+  "courses": [
+    {
+      "instructorId": "JUIgV7HbHHk",
+      "title": "science world",
+      "category": "Science",
+      "description": "",
+      "status": "published",
+      "id": "n51o_FDJw9Y"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
