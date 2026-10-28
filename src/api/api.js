@@ -1,11 +1,13 @@
-// API helper with identical endpoints and async handling
+// API helper with token-authenticated endpoints and async handling
 const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) || "http://localhost:3001";
 const TOKEN_KEY = "accessToken";
 
 function requestHeaders(includeJson = false) {
   const headers = includeJson ? { "Content-Type": "application/json" } : {};
   const token = typeof sessionStorage !== "undefined" ? sessionStorage.getItem(TOKEN_KEY) : null;
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   return headers;
 }
 
@@ -27,7 +29,11 @@ export async function apiPost(path, data) {
       headers: requestHeaders(true),
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Request failed");
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      if (errData && errData.message) return errData;
+      throw new Error("Request failed");
+    }
     return await res.json();
   } catch (err) {
     console.error(err);
@@ -42,7 +48,11 @@ export async function apiPatch(path, data) {
       headers: requestHeaders(true),
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Request failed");
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      if (errData && errData.message) return errData;
+      throw new Error("Request failed");
+    }
     return await res.json();
   } catch (err) {
     console.error(err);

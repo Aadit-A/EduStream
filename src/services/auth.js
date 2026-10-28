@@ -5,18 +5,6 @@ export async function getUsers() {
 }
 
 export async function registerUser(userData) {
-  const users = await getUsers();
-  const duplicateUser = users.some(function (user) {
-    return user.email.toLowerCase() === userData.email.toLowerCase();
-  });
-
-  if (duplicateUser) {
-    return {
-      success: false,
-      message: "An account with this email already exists.",
-    };
-  }
-
   const newUser = {
     name: userData.name.trim(),
     email: userData.email.trim().toLowerCase(),
@@ -24,43 +12,24 @@ export async function registerUser(userData) {
     role: userData.role,
   };
 
-  const result = await apiPost("/users", newUser);
+  const result = await apiPost("/auth/register", newUser);
 
-  if (!result) {
+  if (!result || result.message) {
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message: result?.message || "Something went wrong. Please try again.",
     };
   }
 
-  return {
-    success: true,
-    user: result,
-  };
-}
-
-export async function loginUser(email, password) {
-  const users = await getUsers();
-  const normalizedEmail = String(email).trim().toLowerCase();
-  const foundUser = users.find(function (user) {
-    return user.email === normalizedEmail && user.password === password;
-  });
-
-  if (!foundUser) {
-    return {
-      success: false,
-      message: "Invalid email or password.",
-    };
-  }
-
-  const currentUser = {
-    id: foundUser.id,
-    name: foundUser.name,
-    email: foundUser.email,
-    role: foundUser.role,
+  const currentUser = result.user || {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    role: result.role,
   };
 
-  if (typeof sessionStorage !== "undefined") {
+  if (result.token && typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem(TOKEN_KEY, result.token);
     sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
   }
 
@@ -70,7 +39,41 @@ export async function loginUser(email, password) {
   };
 }
 
-// ── These stay exactly the same — sessionStorage, not localStorage ──
+export async function loginUser(email, password) {
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const result = await apiPost("/auth/login", {
+    email: normalizedEmail,
+    password,
+  });
+
+  if (!result || result.message) {
+    return {
+      success: false,
+      message: result?.message || "Invalid email or password.",
+    };
+  }
+
+  const currentUser = result.user || {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    role: result.role,
+  };
+
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+    if (result.token) {
+      sessionStorage.setItem(TOKEN_KEY, result.token);
+    }
+  }
+
+  return {
+    success: true,
+    user: currentUser,
+  };
+}
+
+// ── Session persistence helpers ──
 export function getCurrentUser() {
   if (typeof sessionStorage === "undefined") {
     return null;
