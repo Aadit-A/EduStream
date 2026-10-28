@@ -50,31 +50,45 @@ A modern, responsive Learning Management System migrated from vanilla HTML/JavaS
 ### 1. Install Dependencies
 ```bash
 npm install
+cd server && npm install && cd ..
 ```
 
-### 2. Run Both Server & Frontend Concurrently (Recommended)
+### 2. Seed Sample Database (MongoDB Atlas)
+```bash
+npm run seed
+```
+Provisions default Instructor (`you@email.com` / `12344`) and Student (`aryankanas2005@gmail.com` / `1234`) with bcrypt hashed passwords.
+
+### 3. Run Both Express Server & React Frontend Concurrently (Recommended)
 ```bash
 npm run dev:all
 ```
-- Frontend: `http://localhost:5173`
-- Backend API (`json-server`): `http://localhost:3001`
+- **React Frontend**: `http://localhost:5173`
+- **Express + MongoDB API**: `http://localhost:3001`
 
-### 3. Run Separately
-To run the mock API backend:
+### 4. Run Separately
+To run the Express + MongoDB backend:
 ```bash
 npm run server
+# or with auto-reload:
+npm run server:dev
 ```
 To run the Vite React frontend:
 ```bash
 npm run dev
 ```
 
-### 4. Build for Production
+### 5. Run Verification & Test Suites
+Run Security unit tests:
 ```bash
-npm run build
+npm run test:security
 ```
-
-### 5. Run Verification Tests
+Run Full End-to-End API integration suite:
 ```bash
 npm test
+```
+
+### 6. Build for Production
+```bash
+npm run build
 ```
