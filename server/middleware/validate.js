@@ -32,6 +32,10 @@ const validateUser = (req, res, next) => {
 };
 
 const validateCourse = (req, res, next) => {
+  if (req.user && !req.body.instructorId) {
+    req.body.instructorId = req.user.sub || req.user.id;
+  }
+
   const { title, category, instructorId, status } = req.body;
   const errors = [];
 

@@ -33,15 +33,22 @@ const getCourseById = async (req, res, next) => {
 const createCourse = async (req, res, next) => {
   try {
     const { instructorId, title, category, description, status } = req.body;
+    const effectiveInstructorId = req.user ? (req.user.sub || req.user.id) : instructorId;
     
-    const course = await Course.create({ instructorId, title, category, description, status });
+    const course = await Course.create({
+      instructorId: effectiveInstructorId,
+      title,
+      category,
+      description,
+      status: status || "draft",
+    });
     
     // Log the course creation in ActivityLog
     await ActivityLog.create({
       action: "COURSE_CREATED",
       courseId: course._id,
       courseTitle: course.title,
-      performedBy: instructorId,
+      performedBy: effectiveInstructorId,
     });
     
     appEvents.emit("course:created", course);
