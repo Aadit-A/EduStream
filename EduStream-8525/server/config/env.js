@@ -1,4 +1,4 @@
-// server/config/env.js
+
 const dns = require("dns");
 // Force Node to use Google Public DNS for SRV resolution
 dns.setServers(["8.8.8.8", "8.8.4.4"]);

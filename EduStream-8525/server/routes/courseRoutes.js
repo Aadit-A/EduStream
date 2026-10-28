@@ -7,6 +7,7 @@ const {
   updateCourse,
   deleteCourse,
 } = require("../controllers/courseController");
+const { validateCourse } = require("../middleware/validate");
 
 // GET    /courses     — get all courses
 // POST   /courses     — create a new course
@@ -14,7 +15,7 @@ const {
 // PATCH  /courses/:id — update a course (edit or publish)
 // DELETE /courses/:id — delete a course
 router.get("/", getAllCourses);
-router.post("/", createCourse);
+router.post("/", validateCourse, createCourse);
 router.get("/:id", getCourseById);
 router.patch("/:id", updateCourse);
 router.delete("/:id", deleteCourse);
