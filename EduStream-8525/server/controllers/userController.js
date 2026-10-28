@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const appEvents = require("../events/appEvents");
 
 // Get all users
 const getAllUsers = async (req, res, next) => {
@@ -37,6 +38,7 @@ const createUser = async (req, res, next) => {
     }
 
     const user = await User.create({ name, email, password, role });
+    appEvents.emit("user:registered", user);
     res.status(201).json(user);
   } catch (error) {
     next(error);

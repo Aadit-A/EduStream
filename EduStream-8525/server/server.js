@@ -9,6 +9,7 @@ const errorHandler = require("./middleware/errorHandler");
 // Routers
 const userRoutes = require("./routes/userRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const systemRoutes = require("./routes/systemRoutes");
 const activityLogRoutes = require("./routes/activityLogRoutes");
 const app = express();
 // 1. Global Pre-processing Middleware Pipeline
@@ -24,6 +25,7 @@ app.use(requestLogger); // Node.js stream-based file & console access logger
 // 2. API Route Mounts
 app.use("/users", userRoutes);
 app.use("/courses", courseRoutes);
+app.use("/system", systemRoutes);
 app.use("/activity-logs", activityLogRoutes);
 // Health check endpoint
 app.get("/", (req, res) => {

@@ -1,5 +1,6 @@
 const Course = require("../models/Course");
 const ActivityLog = require("../models/ActivityLog");
+const appEvents = require("../events/appEvents")
 
 // Get all courses
 // Note: We return instructorId as an ID string (or preserve both id & details)
@@ -32,9 +33,9 @@ const getCourseById = async (req, res, next) => {
 const createCourse = async (req, res, next) => {
   try {
     const { instructorId, title, category, description, status } = req.body;
-
+    
     const course = await Course.create({ instructorId, title, category, description, status });
-
+    
     // Log the course creation in ActivityLog
     await ActivityLog.create({
       action: "COURSE_CREATED",
@@ -42,7 +43,8 @@ const createCourse = async (req, res, next) => {
       courseTitle: course.title,
       performedBy: instructorId,
     });
-
+    
+    appEvents.emit("course:created", course);
     res.status(201).json(course);
   } catch (error) {
     next(error);
@@ -75,6 +77,7 @@ const updateCourse = async (req, res, next) => {
         courseTitle: updatedCourse.title,
         performedBy: course.instructorId,
       });
+      appEvents.emit("course:published", updatedCourse);
     } else {
       await ActivityLog.create({
         action: "COURSE_UPDATED",
@@ -84,7 +87,6 @@ const updateCourse = async (req, res, next) => {
         details: `Updated fields: ${updatedFields.join(", ")}`,
       });
     }
-
     res.json(updatedCourse);
   } catch (error) {
     next(error);
@@ -109,6 +111,7 @@ const deleteCourse = async (req, res, next) => {
     });
 
     await Course.findByIdAndDelete(req.params.id);
+    appEvents.emit("course:deleted", { id: req.params.id, title: course.title });
 
     res.json({ message: "Course deleted successfully" });
   } catch (error) {
