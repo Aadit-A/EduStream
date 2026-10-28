@@ -1,28 +1,11 @@
-const USERS_STORAGE_KEY = "edustream_users";
-const CURRENT_USER_STORAGE_KEY = "currentUser";
+import { apiGet, apiPost } from "../api/api.js";
 
-function getUsers() {
-  const rawUsers = localStorage.getItem(USERS_STORAGE_KEY);
-
-  if (!rawUsers) {
-    return [];
-  }
-
-  try {
-    const parsedUsers = JSON.parse(rawUsers);
-    return Array.isArray(parsedUsers) ? parsedUsers : [];
-  } catch (error) {
-    console.error("Unable to read users from localStorage.", error);
-    return [];
-  }
+export async function getUsers() {
+  return await apiGet("/users");
 }
 
-function saveUsers(users) {
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-}
-
-function registerUser(userData) {
-  const users = getUsers();
+export async function registerUser(userData) {
+  const users = await getUsers();
   const duplicateUser = users.some(function (user) {
     return user.email.toLowerCase() === userData.email.toLowerCase();
   });
@@ -34,29 +17,30 @@ function registerUser(userData) {
     };
   }
 
-  var uniqueNumber = Date.now();
-  let randomId = Math.floor(Math.random() * 1000);
-  const userId = "user-" + uniqueNumber + "-" + randomId;
-
   const newUser = {
-    id: userId,
     name: userData.name.trim(),
     email: userData.email.trim().toLowerCase(),
     password: userData.password,
     role: userData.role,
   };
 
-  users.push(newUser);
-  saveUsers(users);
+  const result = await apiPost("/users", newUser);
+
+  if (!result) {
+    return {
+      success: false,
+      message: "Something went wrong. Please try again.",
+    };
+  }
 
   return {
     success: true,
-    user: newUser,
+    user: result,
   };
 }
 
-function loginUser(email, password) {
-  const users = getUsers();
+export async function loginUser(email, password) {
+  const users = await getUsers();
   const normalizedEmail = String(email).trim().toLowerCase();
   const foundUser = users.find(function (user) {
     return user.email === normalizedEmail && user.password === password;
@@ -76,7 +60,9 @@ function loginUser(email, password) {
     role: foundUser.role,
   };
 
-  sessionStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(currentUser));
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+  }
 
   return {
     success: true,
@@ -84,8 +70,13 @@ function loginUser(email, password) {
   };
 }
 
-function getCurrentUser() {
-  const rawCurrentUser = sessionStorage.getItem(CURRENT_USER_STORAGE_KEY);
+// ── These stay exactly the same — sessionStorage, not localStorage ──
+export function getCurrentUser() {
+  if (typeof sessionStorage === "undefined") {
+    return null;
+  }
+
+  const rawCurrentUser = sessionStorage.getItem("currentUser");
 
   if (!rawCurrentUser) {
     return null;
@@ -100,29 +91,36 @@ function getCurrentUser() {
   }
 }
 
-function isLoggedIn() {
+export function isLoggedIn() {
   return Boolean(getCurrentUser());
 }
 
-function logoutUser() {
-  sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
-  window.location.href = "login.html";
+export function logoutUser(redirect = true) {
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.removeItem("currentUser");
+  }
+  if (redirect && typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
 }
 
-function requireLogin() {
+export function requireLogin() {
   if (!isLoggedIn()) {
-    window.location.href = "login.html";
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return false;
   }
-
   return true;
 }
 
-function requireRole(requiredRole) {
+export function requireRole(requiredRole) {
   const currentUser = getCurrentUser();
 
   if (!currentUser) {
-    window.location.href = "login.html";
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return false;
   }
 
