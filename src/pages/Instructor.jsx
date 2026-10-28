@@ -385,16 +385,19 @@ export default function Instructor() {
         id="removeSection"
         className={`course-section ${activeSection === "remove" ? "" : "hidden"}`}
       >
-        <h2>Remove a Published Course</h2>
-        <p className="placeholder-text">Published courses listed below. Click Remove to delete.</p>
+        <h2>Remove a Course</h2>
+        <p className="placeholder-text">All your courses are listed below. Click Remove to delete.</p>
         <div id="removeList" className="course-list">
-          {publishedCourses.length === 0 ? (
-            <p>No published courses to remove.</p>
+          {courses.length === 0 ? (
+            <p>No courses to remove.</p>
           ) : (
-            publishedCourses.map((c) => (
+            courses.map((c) => (
               <div key={c.id} className="publish-item">
                 <span>
-                  {c.title} — {c.category}
+                  {c.title} — {c.category}{" "}
+                  <strong style={{ fontSize: "0.85em", color: c.status === "published" ? "#16a34a" : "#d97706" }}>
+                    ({c.status})
+                  </strong>
                 </span>
                 <button
                   type="button"

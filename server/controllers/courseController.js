@@ -1,17 +1,19 @@
 const Course = require("../models/Course");
 const ActivityLog = require("../models/ActivityLog");
 
-// Get all courses (populated with instructor name and email)
+// Get all courses
+// Note: We return instructorId as an ID string (or preserve both id & details)
+// so the frontend filter `c.instructorId === currentUser.id` works seamlessly!
 const getAllCourses = async (req, res, next) => {
   try {
-    const courses = await Course.find().populate("instructorId", "name email");
+    const courses = await Course.find();
     res.json(courses);
   } catch (error) {
     next(error);
   }
 };
 
-// Get a single course with full instructor details
+// Get a single course with full instructor details (uses populate)
 const getCourseById = async (req, res, next) => {
   try {
     const course = await Course.findById(req.params.id).populate("instructorId", "name email role");
