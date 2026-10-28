@@ -8,6 +8,7 @@ const errorHandler = require("./middleware/errorHandler");
 // Import routes
 const userRoutes = require("./routes/userRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const activityLogRoutes = require("./routes/activityLogRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +20,7 @@ app.use(express.json());
 // Routes
 app.use("/users", userRoutes);
 app.use("/courses", courseRoutes);
+app.use("/activity-logs", activityLogRoutes);
 
 // Health check
 app.get("/", (req, res) => {
