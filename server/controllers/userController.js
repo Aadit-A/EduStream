@@ -1,20 +1,20 @@
 const User = require("../models/User");
 const appEvents = require("../events/appEvents");
 
-// Get all users
+// Get all users (passwords excluded)
 const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password");
     res.json(users);
   } catch (error) {
     next(error);
   }
 };
 
-// Get a single user by ID
+// Get a single user by ID (password excluded)
 const getUserById = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

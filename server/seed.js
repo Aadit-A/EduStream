@@ -1,4 +1,4 @@
-require("dotenv").config();
+const { MONGO_URI } = require("./config/env");
 const mongoose = require("mongoose");
 const User = require("./models/User");
 const Course = require("./models/Course");
@@ -8,7 +8,7 @@ const ActivityLog = require("./models/ActivityLog");
 const seedDatabase = async () => {
   try {
     console.log("Connecting to MongoDB for seeding...");
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(MONGO_URI);
     console.log("Connected successfully.");
 
     // Clear existing data
