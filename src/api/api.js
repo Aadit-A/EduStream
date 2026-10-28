@@ -1,9 +1,17 @@
 // API helper with identical endpoints and async handling
 const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) || "http://localhost:3001";
+const TOKEN_KEY = "accessToken";
+
+function requestHeaders(includeJson = false) {
+  const headers = includeJson ? { "Content-Type": "application/json" } : {};
+  const token = typeof sessionStorage !== "undefined" ? sessionStorage.getItem(TOKEN_KEY) : null;
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
 
 export async function apiGet(path) {
   try {
-    const res = await fetch(`${API_BASE}${path}`);
+    const res = await fetch(`${API_BASE}${path}`, { headers: requestHeaders() });
     if (!res.ok) throw new Error("Request failed");
     return await res.json();
   } catch (err) {
@@ -16,7 +24,7 @@ export async function apiPost(path, data) {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: requestHeaders(true),
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error("Request failed");
@@ -31,7 +39,7 @@ export async function apiPatch(path, data) {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: requestHeaders(true),
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error("Request failed");
@@ -44,7 +52,10 @@ export async function apiPatch(path, data) {
 
 export async function apiDelete(path) {
   try {
-    const res = await fetch(`${API_BASE}${path}`, { method: "DELETE" });
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: "DELETE",
+      headers: requestHeaders(),
+    });
     return res.ok;
   } catch (err) {
     console.error(err);
@@ -52,4 +63,4 @@ export async function apiDelete(path) {
   }
 }
 
-export { API_BASE };
+export { API_BASE, TOKEN_KEY };

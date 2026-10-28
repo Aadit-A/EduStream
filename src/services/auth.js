@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "../api/api.js";
+import { apiGet, apiPost, TOKEN_KEY } from "../api/api.js";
 
 export async function getUsers() {
   return await apiGet("/users");
@@ -98,6 +98,7 @@ export function isLoggedIn() {
 export function logoutUser(redirect = true) {
   if (typeof sessionStorage !== "undefined") {
     sessionStorage.removeItem("currentUser");
+    sessionStorage.removeItem(TOKEN_KEY);
   }
   if (redirect && typeof window !== "undefined") {
     window.location.href = "/login";
